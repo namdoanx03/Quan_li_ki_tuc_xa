@@ -8,12 +8,12 @@ const createAdmin = async (callback) => {
     "Nguyen Van A",
     "Ha Noi",
     "Nam",
-    "quan ly",
     "01234567",
+    "quan ly",
     "quanly@gmail.com",
     "1980",
     "root",
-    "12345678",
+    "123456",
   ], (err, result) =>{
     if(err) return callback(err)
     else return callback(null, result[0])

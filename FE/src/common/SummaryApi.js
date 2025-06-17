@@ -2,170 +2,101 @@ export const baseURL = "http://localhost:8080"
 
 
 const SummaryApi = {
-    register : {
-        url : '/api/user/register',
-        method : 'post'
+    // USER
+    login: {
+        url: "/api/user/login",
+        method: "post",
     },
-    login : {
-        url : '/api/user/login',
-        method : 'post'
+    addStudent: {
+        url: "/api/user/addStudent",
+        method: "post",
     },
-    forgot_password : {
-        url : "/api/user/forgot-password",
-        method : 'put'
+    deleteStudent: {
+        url: "/api/user/deleteStudent",
+        method: "delete",
     },
-    forgot_password_otp_verification : {
-        url : 'api/user/verify-forgot-password-otp',
-        method : 'put'
+    getAllStudent: {
+        url: "/api/user/getAllStudent",
+        method: "get",
     },
-    resetPassword : {
-        url : "/api/user/reset-password",
-        method : 'put'
+    getStudentByMaSV: {
+        url: "/api/user/getStudentMaSV",
+        method: "get",
     },
-    refreshToken : {
-        url : 'api/user/refresh-token',
-        method : 'post'
+
+    // ROOM
+    addRoom: {
+        url: "/api/room/addRoom",
+        method: "post",
     },
-    userDetails : {
-        url : '/api/user/user-details',
-        method : "get"
+    updateRoom: {
+        url: "/api/room/updateRoom",
+        method: "patch",
     },
-    logout : {
-        url : "/api/user/logout",
-        method : 'get'
+    deleteRoom: {
+        url: "/api/room/deleteRoom",
+        method: "delete",
     },
-    uploadAvatar : {
-        url : "/api/user/upload-avatar",
-        method : 'put'
+
+    // SERVICE
+    addService: {
+        url: "/api/service/addService",
+        method: "post",
     },
-    updateUserDetails : {
-        url : '/api/user/update-user',
-        method : 'put'
+    updateService: {
+        url: "/api/service/updateService",
+        method: "patch",
     },
-    addCategory : {
-        url : '/api/category/add-category',
-        method : 'post'
+    deleteService: {
+        url: "/api/service/deleteService",
+        method: "delete",
     },
-    uploadImage : {
-        url : '/api/file/upload',
-        method : 'post'
+    getAllService: {
+        url: "/api/service/getAllService",
+        method: "get",
     },
-    getCategory : {
-        url : '/api/category/get',
-        method : 'get'
+
+    // ROW ROOM
+    addRowRoom: {
+        url: "/api/rowRoom/addRowRoom",
+        method: "post",
     },
-    updateCategory : {
-        url : '/api/category/update',
-        method : 'put'
+    updateRowRoom: {
+        url: "/api/rowRoom/updateRowRoom",
+        method: "patch",
     },
-    deleteCategory : {
-        url : '/api/category/delete',
-        method : 'delete'
+    deleteRowRoom: {
+        url: "/api/rowRoom/deleteRowRoom",
+        method: "delete",
     },
-    createSubCategory : {
-        url : '/api/subcategory/create',
-        method : 'post'
+    getAllRowRoom: {
+        url: "/api/rowRoom/getAllRowRoom",
+        method: "get",
     },
-    getSubCategory : {
-        url : '/api/subcategory/get',
-        method : 'post'
+
+    // CONTRACT
+    createContract: {
+        url: "/api/contract/createContract",
+        method: "post",
     },
-    updateSubCategory : {
-        url : '/api/subcategory/update',
-        method : 'put'
+    cancelContract: {
+        url: "/api/contract/cancelContract",
+        method: "delete",
     },
-    deleteSubCategory : {
-        url : '/api/subcategory/delete',
-        method : 'delete'
+    getAllContract: {
+        url: "/api/contract/getAllContract",
+        method: "get",
     },
-    createProduct : {
-        url : '/api/product/create',
-        method : 'post'
+    extendContract: {
+        url: "/api/contract/extendContract",
+        method: "patch",
     },
-    getProduct : {
-        url : '/api/product/get',
-        method : 'post'
+
+    // BILL
+    createBill: {
+        url: "/api/bill/createBill",
+        method: "post",
     },
-    getProductByCategory : {
-        url : '/api/product/get-product-by-category',
-        method : 'post'
-    },
-    getProductBySubCategory : {
-        url : '/api/product/get-product-by-subcategory',
-        method : 'post'
-    },
-    getProductByCategoryAndSubCategory : {
-        url : '/api/product/get-pruduct-by-category-and-subcategory',
-        method : 'post'
-    },
-    getProductDetails : {
-        url : '/api/product/get-product-details',
-        method : 'post'
-    },
-    updateProductDetails : {
-        url : "/api/product/update-product-details",
-        method : 'put'
-    },
-    deleteProduct : {
-        url : "/api/product/delete-product",
-        method : 'delete'
-    },
-    searchProduct : {
-        url : '/api/product/search-product',
-        method : 'post'
-    },
-    addTocart : {
-        url : "/api/cart/create",
-        method : 'post'
-    },
-    getCartItem : {
-        url : '/api/cart/get',
-        method : 'get'
-    },
-    updateCartItemQty : {
-        url : '/api/cart/update-qty',
-        method : 'put'
-    },
-    deleteCartItem : {
-        url : '/api/cart/delete-cart-item',
-        method : 'delete'
-    },
-    createAddress : {
-        url : '/api/address/create',
-        method : 'post'
-    },
-    getAddress : {
-        url : '/api/address/get',
-        method : 'get'
-    },
-    updateAddress : {
-        url : '/api/address/update',
-        method : 'put'
-    },
-    disableAddress : {
-        url : '/api/address/disable',
-        method : 'delete'
-    },
-    CashOnDeliveryOrder : {
-        url : "/api/order/cash-on-delivery",
-        method : 'post'
-    },
-    payment_url : {
-        url : "/api/order/checkout",
-        method : 'post'
-    },
-    getOrderItems : {
-        url : '/api/order/order-list',
-        method : 'get'
-    },
-    deleteOrder : {
-        url : '/api/order/delete-order',
-        method : 'delete'
-    },
-    dashboardSummary: {
-        url: '/api/user/dashboard-summary',
-        method: 'get'
-    }
 }
 
 export default SummaryApi

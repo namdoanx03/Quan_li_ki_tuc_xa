@@ -14,32 +14,39 @@ const functionButtons = [
     name: "Quản lý sinh viên",
     icon: <FcPortraitMode size={40} />,
     border: false,
+    path: "/students"
   },
   {
     name: "Quản lý dịch vụ",
     icon: <FcServices size={40} />,
     border: true,
+    path: "/services"
   },
   {
     name: "Quản lý phòng",
     icon: <FcHome size={40} />,
     border: false,
+    path: "/rooms"
   },
   {
     name: "Quản lý thuê phòng",
     icon: <FcNews size={40} />,
     border: false,
+    path: "/room-rental"
   },
   {
     name: "Tìm kiếm",
     icon: <FcSearch size={40} />,
     border: false,
+    path: "/search"
   },
   {
     name: "Thống kê, báo cáo",
     icon: <FcComboChart size={40} />,
     border: true,
+    path: "/data-report"
   },
+
 ];
 
 const HomePage = () => {
@@ -66,6 +73,14 @@ const HomePage = () => {
         {/* Nút đóng */}
         <button className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white rounded-md p-2">
           <IoMdClose size={22} />
+        </button>
+
+        {/* Nút Login */}
+        <button
+          className="absolute top-16 right-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded shadow"
+          onClick={() => navigate('/login')}
+        >
+          Đăng nhập
         </button>
 
         {/* Tiêu đề */}

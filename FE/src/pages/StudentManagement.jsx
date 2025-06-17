@@ -1,60 +1,23 @@
 import React, { useState } from "react";
-import { FcSearch, FcDepartment, FcPortraitMode, FcKindle, FcHome, FcComboChart, FcNews, FcServices } from "react-icons/fc";
 import { TiArrowBack } from "react-icons/ti";
 import { useNavigate } from "react-router-dom";
 
-const functionButtons = [
-  {
-    name: "Quản lý dãy phòng",
-    icon: <FcDepartment size={40} />,
-    border: false,
-  },
-  {
-    name: "Quản lý sinh viên",
-    icon: <FcPortraitMode size={40} />,
-    border: false,
-  },
-  {
-    name: "Quản lý dịch vụ",
-    icon: <FcServices size={40} />,
-    border: true,
-  },
-  {
-    name: "Quản lý phòng",
-    icon: <FcHome size={40} />,
-    border: false,
-  },
-  {
-    name: "Quản lý thuê phòng",
-    icon: <FcNews size={40} />,
-    border: false,
-  },
-  {
-    name: "Tìm kiếm",
-    icon: <FcSearch size={40} />,
-    border: false,
-  },
-  {
-    name: "Thống kê, báo cáo",
-    icon: <FcComboChart size={40} />,
-    border: true,
-  },
-];
-
 const initialRows = [
-  { id: 1, code: "P1", name: "Dãy P1", rooms: 9 },
-  { id: 2, code: "P2", name: "Dãy P2", rooms: 9 },
-  { id: 3, code: "P3", name: "Dãy P3", rooms: 9 },
-  { id: 4, code: "P4", name: "Dãy P4", rooms: 9 },
-  { id: 5, code: "P5", name: "Dãy P5", rooms: 9 },
+  { id: 1, code: "B21DCCN001", name: "Nguyễn Văn Mười", gender: "Nam", dob: "23/10/2003", hometown: "Thanh Hóa", phone: "0393381741", status: "Chưa thuê" },
+  { id: 2, code: "B21DCCN002", name: "Lê Thị Thanh Vân", gender: "Nữ", dob: "23/10/2003", hometown: "Thanh Hóa", phone: "0393381742", status: "Chưa thuê" },
+  { id: 3, code: "B21DCCN003", name: "Nguyễn Văn Long", gender: "Nam", dob: "23/10/2003", hometown: "Thanh Hóa", phone: "0393381743", status: "Đã thuê" },
+  { id: 4, code: "B21DCCN004", name: "Nông Thanh Hà", gender: "Nữ", dob: "23/10/2003", hometown: "Thanh Hóa", phone: "0393381744", status: "Chưa thuê" },
+  { id: 5, code: "B21DCCN005", name: "Đoàn Phương Nam", gender: "Nam", dob: "23/10/2003", hometown: "Thanh Hóa", phone: "0393381745", status: "Đã thuê" },
+  { id: 6, code: "B21DCCN006", name: "Vi Quốc Uy", gender: "Nam", dob: "23/10/2003", hometown: "Thanh Hóa", phone: "0393381746", status: "Chưa thuê" },
+  { id: 7, code: "B21DCCN007", name: "Đoàn Việt Tú", gender: "Nam", dob: "23/10/2003", hometown: "Thanh Hóa", phone: "0393381747", status: "Đã thuê" },
 ];
 
-const totalPages = 7;
+const totalPages = 3;
 
 const StudentManagement = () => {
   const [rows, setRows] = useState(initialRows);
   const [selected, setSelected] = useState(1);
-  const [form, setForm] = useState({ code: "", name: "", rooms: "" });
+  const [form, setForm] = useState({ code: "", name: "", gender: "Nam", dob: "", hometown: "", phone: "", status: "Chưa thuê" });
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
 
@@ -77,32 +40,53 @@ const StudentManagement = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 mt-10">
       <div className="rounded-xl shadow-lg w-full max-w-5xl p-0 relative bg-[#E8F2F9]">
         {/* Header */}
         <div className="bg-[#F9E9B4] py-3 px-6 text-center flex items-center ">
           <button className="text-4xl mr-10" onClick={() => navigate('/')}> <TiArrowBack /> </button>
-          <h1 className="text-2xl font-bold text-gray-800 tracking-wide uppercase pl-64">QUẢN LÝ DÃY PHÒNG</h1>
+          <h1 className="text-2xl font-bold text-gray-800 tracking-wide uppercase pl-64">QUẢN LÝ SINH VIÊN</h1>
         </div>
 
         {/* Form nhập */}
         <div className="bg-[#E9F6FE] border border-blue-200 rounded-lg mx-6 mt-4 p-6">
-          <h2 className="text-xl font-bold mb-4">Thông tin dãy phòng</h2>
-          <div className="flex flex-wrap gap-6 mb-5 justify-center">
-            <div className="flex items-center">
-              <label className="mb-1 font-bold mr-2">Mã dãy:</label>
-              <input className="border rounded py-1 w-[150px]" value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} />
+          <div className="grid gap-y-4 mb-6 px-10">
+            <div className="flex items-center ">
+              <label className="font-bold mr-2 w-24">Mã SV:</label>
+              <input className="border rounded py-1 px-2" value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} />
             </div>
             <div className="flex items-center">
-              <label className="mb-1 font-bold mr-2">Tên dãy:</label>
-              <input className="border rounded py-1 w-[150px]" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+              <label className="font-bold mr-2 w-24">Tên SV:</label>
+              <input className="border rounded py-1 px-2 " value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
             </div>
             <div className="flex items-center">
-              <label className="mb-1 font-bold mr-2">Số phòng:</label>
-              <input className="border rounded py-1 w-[150px]" value={form.rooms} onChange={e => setForm(f => ({ ...f, rooms: e.target.value }))} />
+              <label className="font-bold mr-2 w-24">Giới tính:</label>
+              <select className="border rounded py-1 px-2 " value={form.gender} onChange={e => setForm(f => ({ ...f, gender: e.target.value }))}>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
+              </select>
+            </div>
+            <div className="flex items-center">
+              <label className="font-bold mr-2 w-24">Ngày sinh:</label>
+              <input className="border rounded py-1 px-2 " value={form.dob} onChange={e => setForm(f => ({ ...f, dob: e.target.value }))} placeholder="__/__/____" />
+            </div>
+            <div className="flex items-center">
+              <label className="font-bold mr-2 w-24">Quê quán:</label>
+              <input className="border rounded py-1 px-2 " value={form.hometown} onChange={e => setForm(f => ({ ...f, hometown: e.target.value }))} />
+            </div>
+            <div className="flex items-center">
+              <label className="font-bold mr-2 w-24">Trạng thái:</label>
+              <select className="border rounded py-1 px-2 " value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}>
+                <option value="Chưa thuê">Chưa thuê</option>
+                <option value="Đã thuê">Đã thuê</option>
+              </select>
+            </div>
+            <div className="flex items-center col-span-2">
+              <label className="font-bold mr-2 w-24">SĐT:</label>
+              <input className="border rounded py-1 px-2 " value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} />
             </div>
           </div>
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-wrap gap-4 justify-center mb-2">
             <button className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded">Thêm</button>
             <button className="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold px-6 py-2 rounded">Sửa</button>
             <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded">Xóa</button>
@@ -117,9 +101,13 @@ const StudentManagement = () => {
           <table className="w-full text-center">
             <thead className="bg-[#F2F2F2]">
               <tr>
-                <th className="border px-2 py-1">Mã dãy phòng</th>
-                <th className="border px-2 py-1">Tên dãy phòng</th>
-                <th className="border px-2 py-1">Số phòng</th>
+                <th className="border px-2 py-1">Mã SV</th>
+                <th className="border px-2 py-1">Họ và tên</th>
+                <th className="border px-2 py-1">Giới tính</th>
+                <th className="border px-2 py-1">Ngày sinh</th>
+                <th className="border px-2 py-1">Quê quán</th>
+                <th className="border px-2 py-1">Số điện thoại</th>
+                <th className="border px-2 py-1">Trạng thái</th>
               </tr>
             </thead>
             <tbody>
@@ -128,16 +116,25 @@ const StudentManagement = () => {
                   key={row.id}
                   className={selected === row.id ? "bg-yellow-100 cursor-pointer" : "cursor-pointer bg-[#fff]"}
                   onClick={() => {
-                    setSelected(row.id);
-                    setForm({ code: row.code, name: row.name, rooms: row.rooms.toString() });
+                    if (selected === row.id) {
+                      setSelected(null);
+                      setForm({ code: "", name: "", gender: "Nam", dob: "", hometown: "", phone: "", status: "Chưa thuê" });
+                    } else {
+                      setSelected(row.id);
+                      setForm({ code: row.code, name: row.name, gender: row.gender, dob: row.dob, hometown: row.hometown, phone: row.phone, status: row.status });
+                    }
                   }}
                 >
-                  <td className="border px-2 py-2 text-left">
+                  <td className="border px-2 py-2 text-left font-medium">
                     <span className="inline-block w-5 text-center mr-2 align-middle">{selected === row.id ? "▶" : ""}</span>
                     {row.code}
                   </td>
                   <td className="border px-2 py-2">{row.name}</td>
-                  <td className="border px-2 py-2">{row.rooms}</td>
+                  <td className="border px-2 py-2">{row.gender}</td>
+                  <td className="border px-2 py-2">{row.dob}</td>
+                  <td className="border px-2 py-2">{row.hometown}</td>
+                  <td className="border px-2 py-2">{row.phone}</td>
+                  <td className="border px-2 py-2">{row.status}</td>
                 </tr>
               ))}
             </tbody>
