@@ -1,62 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FcSearch, FcDepartment, FcPortraitMode, FcKindle, FcHome, FcComboChart, FcNews, FcServices } from "react-icons/fc";
 import { TiArrowBack } from "react-icons/ti";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import SummaryApi, { baseURL } from "../common/SummaryApi";
 
-const functionButtons = [
-  {
-    name: "Quản lý dãy phòng",
-    icon: <FcDepartment size={40} />,
-    border: false,
-  },
-  {
-    name: "Quản lý sinh viên",
-    icon: <FcPortraitMode size={40} />,
-    border: false,
-  },
-  {
-    name: "Quản lý dịch vụ",
-    icon: <FcServices size={40} />,
-    border: true,
-  },
-  {
-    name: "Quản lý phòng",
-    icon: <FcHome size={40} />,
-    border: false,
-  },
-  {
-    name: "Quản lý thuê phòng",
-    icon: <FcNews size={40} />,
-    border: false,
-  },
-  {
-    name: "Tìm kiếm",
-    icon: <FcSearch size={40} />,
-    border: false,
-  },
-  {
-    name: "Thống kê, báo cáo",
-    icon: <FcComboChart size={40} />,
-    border: true,
-  },
-];
 
-const initialRows = [
-  { id: 1, code: "P1", name: "Dãy P1", rooms: 9 },
-  { id: 2, code: "P2", name: "Dãy P2", rooms: 9 },
-  { id: 3, code: "P3", name: "Dãy P3", rooms: 9 },
-  { id: 4, code: "P4", name: "Dãy P4", rooms: 9 },
-  { id: 5, code: "P5", name: "Dãy P5", rooms: 9 },
-];
 
-const totalPages = 7;
 
 const BuildingBlockManagement = () => {
-  const [rows, setRows] = useState(initialRows);
-  const [selected, setSelected] = useState(1);
+  const [rows, setRows] = useState([]);
+  const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ code: "", name: "", rooms: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const itemsPerPage = 5;
+
+  // Lấy danh sách dãy phòng khi load trang
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios({
+          method: SummaryApi.getAllRowRoom.method,
+          url: baseURL + SummaryApi.getAllRowRoom.url,
+        });
+        if (res.data && res.data.result) {
+          setRows(res.data.result.map((r, idx) => ({
+            id: idx + 1,
+            code: r.MaDayPhong,
+            name: r.TenDayPhong,
+            rooms: r.SoPhongCuaDay,
+          })));
+        }
+      } catch (err) {
+        setError("Không lấy được danh sách dãy phòng!");
+      }
+    };
+    fetchData();
+  }, []);
+
+  // Tính toán số trang
+  const totalPages = Math.ceil(rows.length / itemsPerPage);
+
+  // Lấy dữ liệu cho trang hiện tại
+  const getCurrentPageData = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return rows.slice(startIndex, endIndex);
+  };
 
   function renderPagination() {
     let pages = [];
@@ -76,8 +69,99 @@ const BuildingBlockManagement = () => {
     return pages;
   }
 
+  // Thêm dãy phòng
+  const handleAdd = async () => {
+    setError(""); setSuccess("");
+    if (!form.code || !form.name || !form.rooms) {
+      setError("Vui lòng nhập đầy đủ thông tin!"); return;
+    }
+    try {
+      const res = await axios({
+        method: SummaryApi.addRowRoom.method,
+        url: baseURL + SummaryApi.addRowRoom.url,
+        data: {
+          MaDayPhong: form.code,
+          TenDayPhong: form.name,
+          SoPhongCuaDay: form.rooms,
+        },
+      });
+      setSuccess("Thêm dãy phòng thành công!");
+      setForm({ code: "", name: "", rooms: "" });
+      setSelected(null);
+      // Reload lại danh sách
+      const reload = await axios({ method: SummaryApi.getAllRowRoom.method, url: baseURL + SummaryApi.getAllRowRoom.url });
+      if (reload.data && reload.data.result) {
+        setRows(reload.data.result.map((r, idx) => ({ id: idx + 1, code: r.MaDayPhong, name: r.TenDayPhong, rooms: r.SoPhongCuaDay }))); }
+    } catch (err) {
+      setError(err.response?.data?.message || "Thêm thất bại!");
+    }
+  };
+
+  // Sửa dãy phòng
+  const handleEdit = async () => {
+    setError(""); setSuccess("");
+    if (selected == null) { setError("Vui lòng chọn dãy để sửa!"); return; }
+    if (!form.code || !form.name || !form.rooms) { setError("Vui lòng nhập đầy đủ thông tin!"); return; }
+    try {
+      const res = await axios({
+        method: SummaryApi.updateRowRoom.method,
+        url: baseURL + SummaryApi.updateRowRoom.url + `?MaDayPhong=${form.code}`,
+        data: {
+          TenDayPhong: form.name,
+          SoPhongCuaDay: form.rooms,
+        },
+      });
+      setSuccess("Sửa dãy phòng thành công!");
+      if (res.data && res.data.result) {
+        setRows(rows.map(r =>
+          r.code === form.code
+            ? { ...r, name: res.data.result.TenDayPhong, rooms: res.data.result.SoPhongCuaDay }
+            : r
+        ));
+      } else {
+        setRows(rows.map(r =>
+          r.code === form.code
+            ? { ...r, name: form.name, rooms: form.rooms }
+            : r
+        ));
+      }
+      setForm({ code: "", name: "", rooms: "" });
+      setSelected(null);
+    } catch (err) {
+      setError(err.response?.data?.message || "Sửa thất bại!");
+    }
+  };
+
+  // Xóa dãy phòng
+  const handleDelete = async () => {
+    setError(""); setSuccess("");
+    if (selected == null) { setError("Vui lòng chọn dãy để xóa!"); return; }
+    try {
+      const res = await axios({
+        method: SummaryApi.deleteRowRoom.method,
+        url: baseURL + SummaryApi.deleteRowRoom.url + `?MaDayPhong=${form.code}`,
+      });
+      setSuccess("Xóa dãy phòng thành công!");
+      setForm({ code: "", name: "", rooms: "" });
+      setSelected(null);
+      // Reload lại danh sách
+      const reload = await axios({ method: SummaryApi.getAllRowRoom.method, url: baseURL + SummaryApi.getAllRowRoom.url });
+      if (reload.data && reload.data.result) {
+        setRows(reload.data.result.map((r, idx) => ({ id: idx + 1, code: r.MaDayPhong, name: r.TenDayPhong, rooms: r.SoPhongCuaDay }))); }
+    } catch (err) {
+      setError(err.response?.data?.message || "Xóa thất bại!");
+    }
+  };
+
+  // Làm mới
+  const handleReset = () => {
+    setError(""); setSuccess("");
+    setForm({ code: "", name: "", rooms: "" });
+    setSelected(null);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 mt-2">
       <div className="rounded-xl shadow-lg w-full max-w-5xl p-0 relative bg-[#E8F2F9]">
         {/* Header */}
         <div className="bg-[#F9E9B4] py-3 px-6 text-center flex items-center ">
@@ -91,24 +175,24 @@ const BuildingBlockManagement = () => {
           <div className="flex flex-wrap gap-6 mb-5 justify-center">
             <div className="flex items-center">
               <label className="mb-1 font-bold mr-2">Mã dãy:</label>
-              <input className="border rounded py-1 w-[150px]" value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} />
+              <input className="border rounded py-1 w-[150px] px-2" value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} />
             </div>
             <div className="flex items-center">
               <label className="mb-1 font-bold mr-2">Tên dãy:</label>
-              <input className="border rounded py-1 w-[150px]" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+              <input className="border rounded py-1 w-[150px] px-2" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
             </div>
             <div className="flex items-center">
-              <label className="mb-1 font-bold mr-2">Số phòng:</label>
-              <input className="border rounded py-1 w-[150px]" value={form.rooms} onChange={e => setForm(f => ({ ...f, rooms: e.target.value }))} />
+              <label className="mb-1 font-bold mr-2 px-2">Số phòng:</label>
+              <input className="border rounded py-1 w-[150px] px-2" value={form.rooms} onChange={e => setForm(f => ({ ...f, rooms: e.target.value }))} />
             </div>
           </div>
           <div className="flex flex-wrap gap-4 justify-center">
-            <button className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded">Thêm</button>
-            <button className="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold px-6 py-2 rounded">Sửa</button>
-            <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded">Xóa</button>
-            <button className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-6 py-2 rounded">Làm mới</button>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded">Lưu</button>
-            <button className="bg-gray-500 hover:bg-gray-600 text-white font-semibold px-6 py-2 rounded">Hủy</button>
+            <button className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded" onClick={handleAdd}>Thêm</button>
+            <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-2 rounded" onClick={handleEdit}>Sửa</button>
+            <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded" onClick={handleDelete}>Xóa</button>
+            <button className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-6 py-2 rounded" onClick={handleReset}>Làm mới</button>
+            {error && <div className="w-full text-center text-red-500 font-semibold mt-2">{error}</div>}
+            {success && <div className="w-full text-center text-green-500 font-semibold mt-2">{success}</div>}
           </div>
         </div>
 
@@ -123,13 +207,18 @@ const BuildingBlockManagement = () => {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, idx) => (
+              {getCurrentPageData().map((row, idx) => (
                 <tr
                   key={row.id}
                   className={selected === row.id ? "bg-yellow-100 cursor-pointer" : "cursor-pointer bg-[#fff]"}
                   onClick={() => {
-                    setSelected(row.id);
-                    setForm({ code: row.code, name: row.name, rooms: row.rooms.toString() });
+                    if (selected === row.id) {
+                      setSelected(null);
+                      setForm({ code: "", name: "", rooms: "" });
+                    } else {
+                      setSelected(row.id);
+                      setForm({ code: row.code, name: row.name, rooms: row.rooms.toString() });
+                    }
                   }}
                 >
                   <td className="border px-2 py-2 text-left">

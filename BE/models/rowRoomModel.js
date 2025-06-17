@@ -1,9 +1,9 @@
 import { connection } from "../config/connectDb.js";
 
 const addRowRoomModel = async (rowRoom, callback) => {
-  const { MaDayPhong, SoPhongCuaDay } = rowRoom;
+  const { MaDayPhong, TenDayPhong, SoPhongCuaDay } = rowRoom;
   const sql =
-    "INSERT INTO dayphong(MaDayPhong, SoPhongCuaDay) VALUES(?,?,?)";
+    "INSERT INTO dayphong(MaDayPhong, TenDayPhong, SoPhongCuaDay) VALUES(?,?,?)";
   connection.query(
     sql,
     [MaDayPhong, TenDayPhong, SoPhongCuaDay],
