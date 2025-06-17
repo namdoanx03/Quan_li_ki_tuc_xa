@@ -31,7 +31,7 @@ const login = async (req, res) => {
 
       return res
         .status(200)
-        .json({ message: "dang nhap thanh cong", result, token });
+        .json({ success: true, message: "dang nhap thanh cong", result, token });
     });
   } catch (error) {
     console.log("====================================");

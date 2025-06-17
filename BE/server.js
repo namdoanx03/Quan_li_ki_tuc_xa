@@ -14,7 +14,7 @@ import billRouter from "./routers/billRouter.js"
 dotenv.config()
 
 const app = express()
-const port = process.env.PORT || 4000
+const port =  4000  || process.env.PORT 
 
 // Middleware
 app.use(cors())
