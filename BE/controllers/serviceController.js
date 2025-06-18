@@ -30,17 +30,28 @@ const updateService = async (req, res) => {
     const updateIfService = req.body; //array
     const {MaDV} = req.query;
     
+    console.log("Update service request:", { MaDV, updateIfService });
+    
      updateServiceModel(MaDV, updateIfService, (err, result) => {
-      if (err)
+      console.log("Update service callback:", { err, result });
+      
+      if (err) {
+        console.error("Update service error:", err);
         return res
           .status(500)
           .json({ message: "ko the cap nhat dich vu", error: err });
-      else if (result)
-        res
+      } else if (!result) {
+        console.log("No service found to update");
+        return res.status(404).json({ message: "khong tim thay dich vu de cap nhat" });
+      } else {
+        console.log("Update service success:", result);
+        return res
           .status(200)
           .json({ message: "cap nhat thanh cong", result: result });
+      }
     });
   } catch (error) {
+    console.error("Update service catch error:", error);
     return res.status(500).json({ message: "loi he thong", error: error });
   }
 };

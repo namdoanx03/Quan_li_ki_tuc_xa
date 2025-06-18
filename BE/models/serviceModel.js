@@ -17,23 +17,31 @@ const addServiceModel = async (service, callback) => {
 const updateServiceModel = async (MaDV, updateIfService, callback) => {
   const fields = Object.keys(updateIfService);
   const values = Object.values(updateIfService);
+  
+  console.log("updateServiceModel input:", { MaDV, updateIfService, fields, values });
+  
   if (fields.length === 0) {
     return callback(new Error("ko co cap nhat moi"));
   }
 
   const setClause = fields.map((field) => `${field} = ?`).join(", ");
-
   values.push(MaDV);
 
   const sql = `UPDATE dichvu SET ${setClause} WHERE MaDV = ?`;
+  console.log("Update SQL:", sql, "Values:", values);
+  
   connection.query(sql, values, (err, result) => {
+    console.log("Update query result:", { err, result });
+    
     if (err) return callback(err);
-    const selectSql = "SELECT * FROM dichvu WHERE MaDV = ?";
-    connection.query(selectSql, [MaDV], (err2, rows) => {
-      if (err2) return callback(err2);
-      if (rows.length === 0) return callback(null, null);
-      return callback(null, rows[0]); 
-    });
+    if (result.affectedRows === 0) {
+      console.log("No rows affected - service not found");
+      return callback(null, null); // Không tìm thấy record để update
+    }
+    // Trả về dữ liệu đã update
+    const updatedData = { ...updateIfService, MaDV: MaDV };
+    // console.log("Returning updated data:", updatedData);
+    return callback(null, updatedData);
   });
 };
 
