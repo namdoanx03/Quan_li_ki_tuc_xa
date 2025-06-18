@@ -4,6 +4,7 @@ import {
   deleteStudentModel,
   getStudentAllModel,
   getStudentByMaSVModel,
+  updateStudentModel,
 } from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -115,4 +116,18 @@ const getStudentByMaSV = async(req, res) => {
   }
 }
 
-export { login, createStudent, deleteStudent, getAllStudent, getStudentByMaSV };
+const updateStudent = async (req, res) => {
+  try {
+    const { MaSV } = req.query;
+    const data = req.body;
+    updateStudentModel(MaSV, data, (err, result) => {
+      if (err)
+        return res.status(500).json({ message: "Lỗi cập nhật sinh viên", error: err });
+      return res.status(200).json({ message: "cap nhat thanh cong", result: result });
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Lỗi hệ thống", error: error });
+  }
+};
+
+export { login, createStudent, deleteStudent, getAllStudent, getStudentByMaSV, updateStudent };

@@ -23,6 +23,10 @@ const SummaryApi = {
         url: "/api/user/getStudentMaSV",
         method: "get",
     },
+    updateStudent: {
+        url: "/api/user/updateStudent",
+        method: "patch",
+    },
 
     // ROOM
     addRoom: {

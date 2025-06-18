@@ -55,6 +55,29 @@ const getStudentByMaSVModel = async (MaSV, callback) => {
   });
 };
 
+const updateStudentModel = async (MaSV, data, callback) => {
+  const { TenSV, NamSinh, DiaChi, ChucVu, GioiTinh, SDT, email } = data;
+  const sql = `
+    UPDATE sinhvien SET
+      TenSV = ?,
+      NamSinh = ?,
+      DiaChi = ?,
+      ChucVu = ?,
+      GioiTinh = ?,
+      SDT = ?,
+      email = ?
+    WHERE MaSV = ?
+  `;
+  connection.query(
+    sql,
+    [TenSV, NamSinh, DiaChi, ChucVu, GioiTinh, SDT, email, MaSV],
+    (err, result) => {
+      if (err) return callback(err);
+      else return callback(null, result);
+    }
+  );
+};
+
 export {
   findUserByEmailQl,
   addStudent,
@@ -62,4 +85,5 @@ export {
   deleteStudentModel,
   getStudentAllModel,
   getStudentByMaSVModel,
+  updateStudentModel,
 };
