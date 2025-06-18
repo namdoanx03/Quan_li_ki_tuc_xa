@@ -52,10 +52,12 @@ const getAllRowRoom = async (req, res) => {
 const checkCapacityRowRoom = async (MaDayPhong) => {
     const capacityNow = await getCapacityNowRowRoomModel(MaDayPhong)
     const capacity = await capacityRowRoomModel(MaDayPhong)
-    // console.log(MaDayPhong);
-    // console.log(capacity);
-    // console.log(capacityNow);
-    if(parseInt(capacity) > parseInt(capacityNow)) return 1;
+    console.log('DEBUG checkCapacityRowRoom:', { MaDayPhong, capacityNow, capacity });
+    if (capacity === null || capacity === undefined) {
+        console.log('WARNING: SoPhongCuaDay (capacity) is null/undefined for MaDayPhong:', MaDayPhong);
+        return 1; // Không giới hạn nếu chưa có cấu hình sức chứa
+    }
+    if (parseInt(capacity) > parseInt(capacityNow)) return 1;
     return 0;
 }
 export {addRowRoom, updateRowRoom, deleteRowOfRoom, getAllRowRoom, checkCapacityRowRoom}

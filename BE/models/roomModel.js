@@ -1,9 +1,9 @@
 import {connection} from "../config/connectDb.js"
 
 const addRoomModel = async (room, callback) => {
-    const {MaPhong, SucChua, GiaPhong, MaDayPhong} = room;
-    const sql = "INSERT INTO phong(MaPhong,SucChua,GiaPhong,MaDayPhong) VALUES (?,?,?,?,?)"
-     connection.query(sql, [MaPhong,TenPhong,SucChua,GiaPhong,MaDayPhong], (err) => {
+    const { MaPhong, TenPhong, SucChua, GiaPhong, MaDayPhong } = room;
+    const sql = "INSERT INTO phong(MaPhong,TenPhong,SucChua,GiaPhong,MaDayPhong) VALUES (?,?,?,?,?)";
+    connection.query(sql, [MaPhong, TenPhong, SucChua, GiaPhong, MaDayPhong], (err) => {
         if(err) return callback(err);
         else return callback(null)
     })

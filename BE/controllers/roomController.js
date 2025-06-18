@@ -3,6 +3,7 @@ import {
   addRoomModel,
   deleteRoomModel,
   updateRoomModel,
+  getAllRoomModel,
 } from "../models/roomModel.js";
 
 import { checkCapacityRowRoom } from "./rowOfRoomController.js";
@@ -65,4 +66,17 @@ const deleteRoom = async (req, res) => {
   });
 };
 
-export { addRoom, updateRoom, deleteRoom };
+const getAllRoom = async (req, res) => {
+  try {
+    getAllRoomModel((err, result) => {
+      if (err)
+        return res.status(500).json({ message: "ko lay dc danh sach phong", error: err });
+      else if (result)
+        return res.status(200).json({ message: "lay danh sach thanh cong", result: result });
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "loi he thong", error: error });
+  }
+};
+
+export { addRoom, updateRoom, deleteRoom, getAllRoom };
