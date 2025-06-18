@@ -41,6 +41,10 @@ const SummaryApi = {
         url: "/api/room/deleteRoom",
         method: "delete",
     },
+    getAllRoom: {
+        url: "/api/room/getAllRoom",
+        method: "get",
+    },
 
     // SERVICE
     addService: {
@@ -94,6 +98,10 @@ const SummaryApi = {
     extendContract: {
         url: "/api/contract/extendContract",
         method: "patch",
+    },
+    updateAllRoomStudentCounts: {
+        url: "/api/contract/updateAllRoomStudentCounts",
+        method: "post",
     },
 
     // BILL

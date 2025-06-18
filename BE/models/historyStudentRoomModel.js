@@ -41,28 +41,70 @@ const historyDeleteContract = async (MaPhong, MaSV, NgayRa, callback) => {
 };
 
 const updateHistoryStudentRoom = async (MaPhong, MaSV, command, callback) => {
-  let SoSVHT = await getCapacityRoomNow(MaPhong);
-  if (command === "add") SoSVHT += 1;
-  else SoSVHT -= 1;
+  try {
+    console.log("Updating room history:", { MaPhong, MaSV, command });
 
-  const sql = "INSERT INTO lichsusosvphong(MaPhong,SoSVHT) VALUES(?,?)";
-  connection.query(sql, [MaPhong, SoSVHT], (err) => {
-    if (err) return callback(err);
-    if (command === "add") {
-      const NgayVao = new Date();
-      const NgayRa = null;
-      historyCreateContract(MaPhong, MaSV, NgayVao, NgayRa, (err, result) => {
-        if (err) return callback(err);
-        else return callback(null, { SoSVHT: SoSVHT, result: result });
-      });
-    } else {
-      const NgayRa = new Date();
-      historyDeleteContract(MaPhong, MaSV, NgayRa, (err, result) => {
-        if (err) callback(err);
-        else return callback(null, { SoSVHT: SoSVHT, result: result });
-      });
+    // Get current student count
+    let SoSVHT = await getCapacityRoomNow(MaPhong);
+    console.log("Current student count:", SoSVHT);
+
+    // Validate command
+    if (command !== "add" && command !== "cancel") {
+      throw new Error("Invalid command. Must be 'add' or 'cancel'");
     }
-  });
+
+    // Update student count
+    if (command === "add") {
+      SoSVHT = parseInt(SoSVHT) + 1;
+    } else {
+      SoSVHT = Math.max(0, parseInt(SoSVHT) - 1); // Ensure we don't go below 0
+    }
+    console.log("New student count:", SoSVHT);
+
+    // Insert history record
+    const sql = "INSERT INTO lichsusosvphong(MaPhong,SoSVHT) VALUES(?,?)";
+    connection.query(sql, [MaPhong, SoSVHT], async (err) => {
+      if (err) {
+        console.error("Error updating student count history:", err);
+        return callback(err);
+      }
+
+      try {
+        if (command === "add") {
+          const NgayVao = new Date();
+          const NgayRa = null;
+          console.log("Creating room history entry:", { MaPhong, MaSV, NgayVao });
+          
+          historyCreateContract(MaPhong, MaSV, NgayVao, NgayRa, (err, result) => {
+            if (err) {
+              console.error("Error creating room history:", err);
+              return callback(err);
+            }
+            console.log("Room history created successfully");
+            return callback(null, { SoSVHT: SoSVHT, result: result });
+          });
+        } else {
+          const NgayRa = new Date();
+          console.log("Updating room history exit date:", { MaPhong, MaSV, NgayRa });
+          
+          historyDeleteContract(MaPhong, MaSV, NgayRa, (err, result) => {
+            if (err) {
+              console.error("Error updating room history exit date:", err);
+              return callback(err);
+            }
+            console.log("Room history updated successfully");
+            return callback(null, { SoSVHT: SoSVHT, result: result });
+          });
+        }
+      } catch (historyError) {
+        console.error("Error in history operations:", historyError);
+        return callback(historyError);
+      }
+    });
+  } catch (error) {
+    console.error("Error in updateHistoryStudentRoom:", error);
+    return callback(error);
+  }
 };
 
 export { getCapacityRoomNow, historyCreateContract, updateHistoryStudentRoom };

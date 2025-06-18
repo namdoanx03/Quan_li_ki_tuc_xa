@@ -19,13 +19,14 @@ const createContractModel = (
   MaHD,
   NgayLap,
   NgayHetHan,
+  TenHD,
   callback
 ) => {
   const sql =
-    "INSERT INTO hopdong(MaSV, MaPhong, MaQl, MaHD, NgayLap, NgayHetHan) VALUES (?,?,?,?,?,?)";
+    "INSERT INTO hopdong(MaSV, MaPhong, MaQl, MaHD, NgayLap, NgayHetHan, TenHD) VALUES (?,?,?,?,?,?,?)";
   connection.query(
     sql,
-    [MaSV, MaPhong, MaQl, MaHD, NgayLap, NgayHetHan],
+    [MaSV, MaPhong, MaQl, MaHD, NgayLap, NgayHetHan, TenHD],
     (err) => {
       if (err) return callback(err);
       else return callback(null);
@@ -54,8 +55,8 @@ const extendContractModel = (NgayLap, NgayHetHan, MaHD, callback) => {
 };
 
 const getAllContractModel = async () => {
-  const sql = `SELECT h.MaHD, sv.MaSV, sv.TenSV, sv.email, sv.DiaChi, sv.GioiTinh,sv.SDT,sv.NamSinh,
-    p.MaPhong
+  const sql = `SELECT h.MaHD, sv.MaSV, sv.TenSV, sv.email, sv.DiaChi, sv.GioiTinh, sv.SDT, sv.NamSinh,
+    p.MaPhong, p.TenPhong, h.NgayLap, h.NgayHetHan
     FROM hopdong h
     JOIN sinhvien sv ON h.MaSV = sv.MaSV
     JOIN phong p ON h.MaPhong = p.MaPhong`;
