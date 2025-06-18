@@ -1,13 +1,16 @@
 import {connection} from "../config/connectDb.js"
 
 const addRoomModel = async (room, callback) => {
-    const { MaPhong, TenPhong, SucChua, GiaPhong, MaDayPhong } = room;
-    const sql = "INSERT INTO phong(MaPhong,TenPhong,SucChua,GiaPhong,MaDayPhong) VALUES (?,?,?,?,?)";
-    connection.query(sql, [MaPhong, TenPhong, SucChua, GiaPhong, MaDayPhong], (err) => {
-        if(err) return callback(err);
-        else return callback(null)
-    })
-}
+    const { MaPhong, TenPhong, SucChua, GiaPhong, MaDayPhong, LoaiPhong, SoSVDangOHienTai } = room;
+    const sql = "INSERT INTO phong(MaPhong,TenPhong,SucChua,GiaPhong,MaDayPhong,LoaiPhong,SoSVDangOHienTai) VALUES (?,?,?,?,?,?,?)";
+    connection.query(sql, [MaPhong, TenPhong, SucChua, GiaPhong, MaDayPhong, LoaiPhong, SoSVDangOHienTai], (err) => {
+        if(err) {
+            console.error("Error in addRoomModel:", err);
+            return callback(err);
+        }
+        return callback(null);
+    });
+};
 
 const updateRoomModel = async (MaPhong, updateIfRoom, callback) => {
     const fields = Object.keys(updateIfRoom);

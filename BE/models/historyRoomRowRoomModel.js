@@ -55,7 +55,6 @@ const updateRoomRowRoomModel = async (
   callback
 ) => {
   const SoPhongHienTai = await getRoomRowRoomModel(MaDayPhong, command);
-  if (SoPhongHienTai < 0) return callback("loi xoa phong");
   if (command === "add") {
     const NgayThemPhong = new Date();
     const NgayXoaPhong = null;

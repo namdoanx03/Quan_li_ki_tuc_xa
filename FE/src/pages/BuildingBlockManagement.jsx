@@ -182,7 +182,7 @@ const BuildingBlockManagement = () => {
               <input className="border rounded py-1 w-[150px] px-2" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
             </div>
             <div className="flex items-center">
-              <label className="mb-1 font-bold mr-2 px-2">Số phòng:</label>
+              <label className="mb-1 font-bold mr-2 px-2">Số phòng của dãydãy:</label>
               <input className="border rounded py-1 w-[150px] px-2" value={form.rooms} onChange={e => setForm(f => ({ ...f, rooms: e.target.value }))} />
             </div>
           </div>
@@ -203,7 +203,7 @@ const BuildingBlockManagement = () => {
               <tr>
                 <th className="border px-2 py-1">Mã dãy phòng</th>
                 <th className="border px-2 py-1">Tên dãy phòng</th>
-                <th className="border px-2 py-1">Số phòng</th>
+                <th className="border px-2 py-1">Tổng số phòng</th>
               </tr>
             </thead>
             <tbody>
