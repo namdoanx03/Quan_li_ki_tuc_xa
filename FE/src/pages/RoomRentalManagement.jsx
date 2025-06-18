@@ -253,8 +253,8 @@ const RoomRentalManagement = () => {
   };
 
   const handleCreateBill = async () => {
-    if (!form.studentId || !form.roomCode) {
-      showMessage('error', 'Vui lòng chọn sinh viên và phòng để tạo hóa đơn');
+    if (!selectedContract) {
+      showMessage('error', 'Vui lòng chọn hợp đồng để tạo hóa đơn');
       return;
     }
 
@@ -265,9 +265,10 @@ const RoomRentalManagement = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          MaSV: form.studentId,
-          MaPhong: form.roomCode,
-          NgayLap: form.date,
+          MaHD: selectedContract.MaHD,
+          MaSV: selectedContract.MaSV,
+          MaPhong: selectedContract.MaPhong,
+          NgayLap: new Date().toISOString().split('T')[0],
           MaQl: "QL001"
         }),
       });
@@ -283,7 +284,7 @@ const RoomRentalManagement = () => {
           studentId: "",
           roomCode: "",
         });
-        setSelected(null);
+        setSelectedContract(null);
       } else {
         showMessage('error', data.message || 'Tạo hóa đơn thất bại');
       }
@@ -497,16 +498,6 @@ const RoomRentalManagement = () => {
                 className="border rounded py-1 px-2 w-40"
                 value={form.contractStartDate}
                 onChange={e => setForm(f => ({ ...f, contractStartDate: e.target.value }))}
-                min={new Date().toISOString().split('T')[0]}
-              />
-            </div>
-            <div className="flex items-center mb-2">
-              <label className="font-bold w-24">Ngày lập hóa đơn:</label>
-              <input
-                type="date"
-                className="border rounded py-1 px-2 w-40"
-                value={form.date}
-                onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
