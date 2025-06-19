@@ -1,5 +1,17 @@
 import { connection } from "../config/connectDb.js";
 
+const generateMaDayPhong = async () => {
+  const sql =
+    "SELECT MaDayPhong FROM dayphong ORDER BY MaDayPhong DESC LIMIT 1";
+  const [rows] = await connection.promise().query(sql);
+  if (rows.length === 0) return "DP001";
+
+  const lastMaDayPhong = rows[0].MaDayPhong;
+  const numberPart = parseInt(lastMaDayPhong.slice(2));
+  const newNumber = numberPart + 1;
+  return "DP" + newNumber.toString().padStart(3, "0");
+};
+
 const addRowRoomModel = async (rowRoom, callback) => {
   const { MaDayPhong, TenDayPhong, SoPhongCuaDay } = rowRoom;
   const sql =
@@ -12,7 +24,11 @@ const addRowRoomModel = async (rowRoom, callback) => {
       const sql2 = "SELECT * FROM dayphong WHERE MaDayPhong = ?";
       connection.query(sql2, [MaDayPhong], (err2, row) => {
         if (err2) return callback(err2);
-        else return callback(null, row[0]);
+        if (row && row.length > 0) {
+          return callback(null, row[0]);
+        } else {
+          return callback(null, { MaDayPhong, TenDayPhong, SoPhongCuaDay });
+        }
       });
     }
   );
@@ -57,4 +73,4 @@ const capacityRowRoomModel = async (MaDayPhong) => {
 }
 
 
-export { addRowRoomModel, updateRowRoomModel, deleteRowRoomModel, getAllRowRoomModel, capacityRowRoomModel };
+export { addRowRoomModel, updateRowRoomModel, deleteRowRoomModel, getAllRowRoomModel, capacityRowRoomModel, generateMaDayPhong };

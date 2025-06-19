@@ -1,12 +1,12 @@
 import { getCapacityNowRowRoomModel } from "../models/historyRoomRowRoomModel.js";
-import { addRowRoomModel, capacityRowRoomModel, deleteRowRoomModel, getAllRowRoomModel, updateRowRoomModel } from "../models/rowRoomModel.js";
+import { addRowRoomModel, capacityRowRoomModel, deleteRowRoomModel, getAllRowRoomModel, updateRowRoomModel, generateMaDayPhong } from "../models/rowRoomModel.js";
 
 const addRowRoom = async (req, res) => {
     try {
         const rowRoom = req.body;
          addRowRoomModel(rowRoom, (err, result) => {
             if(err) return res.status(500).json({message: "ko them dc day phong", err:err})
-            if(result) return res.status(200).json({message:"them day phong thanh cong", result:result})
+            return res.status(200).json({message:"them day phong thanh cong", result:result})
         })
     } catch (error) {
         return res.status(500).json({message:"loi he thong", error:error})
@@ -42,8 +42,17 @@ const getAllRowRoom = async (req, res) => {
     try {
          getAllRowRoomModel((err, result) => {
             if(err) return res.status(500).json({message:"ko lay dc", err:err});
-            else if(result) return res.status(200).json({message:"lay thanh cong", result:result})
+            return res.status(200).json({message:"lay thanh cong", result:result || []})
         })
+    } catch (error) {
+        return res.status(500).json({message:"loi he thong", error:error})
+    }
+}
+
+const getGenerateMaDayPhong = async (req, res) => {
+    try {
+        const maDayPhong = await generateMaDayPhong();
+        return res.status(200).json({message:"lay ma day phong thanh cong", result: maDayPhong})
     } catch (error) {
         return res.status(500).json({message:"loi he thong", error:error})
     }
@@ -60,4 +69,4 @@ const checkCapacityRowRoom = async (MaDayPhong) => {
     if (parseInt(capacity) > parseInt(capacityNow)) return 1;
     return 0;
 }
-export {addRowRoom, updateRowRoom, deleteRowOfRoom, getAllRowRoom, checkCapacityRowRoom}
+export {addRowRoom, updateRowRoom, deleteRowOfRoom, getAllRowRoom, checkCapacityRowRoom, getGenerateMaDayPhong}
