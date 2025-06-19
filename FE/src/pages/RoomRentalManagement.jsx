@@ -88,12 +88,12 @@ const RoomRentalManagement = () => {
       const studentsData = await studentsResponse.json();
 
       if (roomsData.result) setRooms(roomsData.result);
-      if (contractsData.hopdong) setContracts(contractsData.hopdong);
+      if (contractsData.result) setContracts(contractsData.result);
       if (studentsData.result) setStudents(studentsData.result);
 
       console.log('Data loaded successfully:', {
         rooms: roomsData.result?.length || 0,
-        contracts: contractsData.hopdong?.length || 0,
+        contracts: contractsData.result?.length || 0,
         students: studentsData.result?.length || 0
       });
     } catch (err) {
