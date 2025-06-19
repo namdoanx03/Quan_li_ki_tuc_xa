@@ -412,8 +412,8 @@ const RoomRentalManagement = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#dbeafe]">
-      <div className="rounded-xl shadow-lg w-full max-w-6xl p-0 relative bg-[#E8F2F9]">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="rounded-xl shadow-lg w-full max-w-6xl p-0 mx-10 my-4 relative bg-[#E8F2F9]">
         {/* Header */}
         <div className="bg-[#F9E9B4] py-3 px-6 text-center flex items-center rounded-t-xl">
           <button className="text-4xl mr-10" onClick={() => navigate("/")}> <TiArrowBack /> </button>

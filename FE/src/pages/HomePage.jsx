@@ -20,7 +20,7 @@ const functionButtons = [
   {
     name: "Quản lý dịch vụ",
     icon: <FcServices size={40} />,
-    border: true,
+    border: false,
     path: "/services"
   },
   {
@@ -35,16 +35,16 @@ const functionButtons = [
     border: false,
     path: "/room-rental"
   },
-  {
-    name: "Tìm kiếm",
-    icon: <FcSearch size={40} />,
-    border: false,
-    path: "/search"
-  },
+  // {
+  //   name: "Tìm kiếm",
+  //   icon: <FcSearch size={40} />,
+  //   border: false,
+  //   path: "/search"
+  // },
   {
     name: "Thống kê, báo cáo",
     icon: <FcComboChart size={40} />,
-    border: true,
+    border: false,
     path: "/data-report"
   },
 
@@ -120,7 +120,7 @@ const HomePage = () => {
         </div>
 
         {/* Grid chức năng */}
-        <div className="w-full px-6 pb-4">
+        <div className="w-full px-6 pb-4 mb-10">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             {functionButtons.map((btn) => (
               <button

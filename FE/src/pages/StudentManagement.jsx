@@ -5,6 +5,8 @@ import axios from "axios";
 import SummaryApi, { baseURL } from "../common/SummaryApi";
 
 const StudentManagement = () => {
+  const [students, setStudents] = useState([]);
+  const [contracts, setContracts] = useState([]);
   const [rows, setRows] = useState([]);
   const [selected, setSelected] = useState(null);
   const [form, setForm] = useState({ 
@@ -22,24 +24,41 @@ const StudentManagement = () => {
   const navigate = useNavigate();
   const itemsPerPage = 5;
 
-  // Lấy danh sách sinh viên khi load trang
+  // Lấy danh sách sinh viên
   useEffect(() => {
-    fetchStudents();
+    axios({
+      method: SummaryApi.getAllStudent.method,
+      url: baseURL + SummaryApi.getAllStudent.url,
+    }).then(res => {
+      console.log("Students:", res.data.result);
+      setStudents(res.data.result || []);
+    });
   }, []);
 
-  const fetchStudents = async () => {
-    try {
-      const res = await axios({
-        method: SummaryApi.getAllStudent.method,
-        url: baseURL + SummaryApi.getAllStudent.url,
-      });
-      if (res.data && res.data.result) {
-        setRows(res.data.result);
-      }
-    } catch (err) {
-      setError("Không lấy được danh sách sinh viên!");
-    }
-  };
+  // Lấy danh sách hợp đồng
+  useEffect(() => {
+    axios({
+      method: SummaryApi.getAllContract.method,
+      url: baseURL + SummaryApi.getAllContract.url,
+    }).then(res => {
+      console.log("Contracts:", res.data.result);
+      setContracts(res.data.result || []);
+    });
+  }, []);
+
+  // Luôn cập nhật trạng thái thuê khi students hoặc contracts thay đổi
+  useEffect(() => {
+    const studentsWithStatus = students.map(student => {
+      const hasContract = contracts.some(contract =>
+        String(contract.MaSV).trim().toLowerCase() === String(student.MaSV).trim().toLowerCase()
+      );
+      return {
+        ...student,
+        trangThai: hasContract ? "Đã thuê" : "Chưa thuê"
+      };
+    });
+    setRows(studentsWithStatus);
+  }, [students, contracts]);
 
   // Tính toán số trang
   const totalPages = Math.ceil(rows.length / itemsPerPage);
@@ -105,7 +124,12 @@ const StudentManagement = () => {
           phone: "",
           status: "Chưa thuê"
         });
-        fetchStudents();
+        axios({
+          method: SummaryApi.getAllStudent.method,
+          url: baseURL + SummaryApi.getAllStudent.url,
+        }).then(res => {
+          setStudents(res.data.result || []);
+        });
       } else {
         setError(res.data.message || "Không thể thêm sinh viên!");
       }
@@ -153,7 +177,12 @@ const StudentManagement = () => {
           status: "Chưa thuê"
         });
         setSelected(null);
-        fetchStudents();
+        axios({
+          method: SummaryApi.getAllStudent.method,
+          url: baseURL + SummaryApi.getAllStudent.url,
+        }).then(res => {
+          setStudents(res.data.result || []);
+        });
       } else {
         setError(res.data.message || "Không thể sửa thông tin sinh viên!");
       }
@@ -193,7 +222,12 @@ const StudentManagement = () => {
             status: "Chưa thuê"
           });
           setSelected(null);
-          fetchStudents();
+          axios({
+            method: SummaryApi.getAllStudent.method,
+            url: baseURL + SummaryApi.getAllStudent.url,
+          }).then(res => {
+            setStudents(res.data.result || []);
+          });
         } else {
           setError(res.data.message || "Không thể xóa sinh viên!");
         }
@@ -220,8 +254,8 @@ const StudentManagement = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 mt-10">
-      <div className="rounded-xl shadow-lg w-full max-w-5xl p-0 relative bg-[#E8F2F9]">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 ">
+      <div className="rounded-xl shadow-lg w-full max-w-5xl p-0 my-4 relative bg-[#E8F2F9]">
         {/* Header */}
         <div className="bg-[#F9E9B4] py-3 px-6 text-center flex items-center ">
           <button className="text-4xl mr-10" onClick={() => navigate('/')}> <TiArrowBack /> </button>
@@ -374,7 +408,7 @@ const StudentManagement = () => {
                         dob: row.NamSinh,
                         hometown: row.DiaChi,
                         phone: row.SDT,
-                        status: row.ChucVu
+                        status: row.trangThai
                       });
                     }
                   }}
@@ -390,7 +424,7 @@ const StudentManagement = () => {
                   <td className="border px-2 py-2">{row.NamSinh}</td>
                   <td className="border px-2 py-2">{row.DiaChi}</td>
                   <td className="border px-2 py-2">{row.SDT}</td>
-                  <td className="border px-2 py-2">{row.ChucVu}</td>
+                  <td className="border px-2 py-2">{row.trangThai}</td>
                 </tr>
               ))}
             </tbody>

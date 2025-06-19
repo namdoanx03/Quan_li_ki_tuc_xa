@@ -252,7 +252,7 @@ const getAllContract = async (req, res) => {
       return res.status(404).json({ message: "ko lay dc hop dong" });
     return res
       .status(200)
-      .json({ message: "lay danh sach thanh cong", hopdong: hopdong });
+      .json({ message: "lay danh sach thanh cong", result: hopdong });
   } catch (error) {
     return res.status(500).json({ message: "loi he thong", error: error });
   }

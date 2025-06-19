@@ -17,6 +17,7 @@ const BuildingBlockManagement = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const itemsPerPage = 5;
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Lấy danh sách dãy phòng khi load trang
   useEffect(() => {
@@ -40,6 +41,21 @@ const BuildingBlockManagement = () => {
     };
     fetchData();
   }, []);
+
+  // Lấy mã dãy phòng tự động
+  const generateCode = async () => {
+    try {
+      const res = await axios({
+        method: SummaryApi.generateMaDayPhong.method,
+        url: baseURL + SummaryApi.generateMaDayPhong.url,
+      });
+      if (res.data && res.data.result) {
+        setForm(prev => ({ ...prev, code: res.data.result }));
+      }
+    } catch (err) {
+      setError("Không thể tạo mã tự động!");
+    }
+  };
 
   // Tính toán số trang
   const totalPages = Math.ceil(rows.length / itemsPerPage);
@@ -72,27 +88,64 @@ const BuildingBlockManagement = () => {
   // Thêm dãy phòng
   const handleAdd = async () => {
     setError(""); setSuccess("");
-    if (!form.code || !form.name || !form.rooms) {
+    if (!form.name || !form.rooms) {
       setError("Vui lòng nhập đầy đủ thông tin!"); return;
     }
+    
+    if (isNaN(form.rooms) || parseInt(form.rooms) <= 0) {
+      setError("Số phòng phải là số dương!"); return;
+    }
+    
     try {
+      console.log("=== BẮT ĐẦU THÊM DÃY PHÒNG ===");
+      console.log("Form data:", form);
+      
+      // Tự động generate mã dãy phòng
+      console.log("1. Đang tạo mã tự động...");
+      const codeRes = await axios({
+        method: SummaryApi.generateMaDayPhong.method,
+        url: baseURL + SummaryApi.generateMaDayPhong.url,
+      });
+      
+      console.log("Response tạo mã:", codeRes.data);
+      
+      if (!codeRes.data || !codeRes.data.result) {
+        setError("Không thể tạo mã tự động!"); return;
+      }
+      
+      const generatedCode = codeRes.data.result;
+      console.log("2. Mã được tạo:", generatedCode);
+      
+      console.log("3. Đang thêm dãy phòng...");
       const res = await axios({
         method: SummaryApi.addRowRoom.method,
         url: baseURL + SummaryApi.addRowRoom.url,
         data: {
-          MaDayPhong: form.code,
+          MaDayPhong: generatedCode,
           TenDayPhong: form.name,
-          SoPhongCuaDay: form.rooms,
+          SoPhongCuaDay: parseInt(form.rooms),
         },
       });
+      
+      console.log("Response thêm dãy phòng:", res.data);
+      
       setSuccess("Thêm dãy phòng thành công!");
       setForm({ code: "", name: "", rooms: "" });
       setSelected(null);
+      
+      console.log("4. Đang reload danh sách...");
       // Reload lại danh sách
       const reload = await axios({ method: SummaryApi.getAllRowRoom.method, url: baseURL + SummaryApi.getAllRowRoom.url });
       if (reload.data && reload.data.result) {
         setRows(reload.data.result.map((r, idx) => ({ id: idx + 1, code: r.MaDayPhong, name: r.TenDayPhong, rooms: r.SoPhongCuaDay }))); }
+      
+      console.log("=== HOÀN THÀNH THÊM DÃY PHÒNG ===");
     } catch (err) {
+      console.error("=== LỖI THÊM DÃY PHÒNG ===");
+      console.error("Error:", err);
+      console.error("Error message:", err.message);
+      console.error("Error response:", err.response?.data);
+      console.error("Error status:", err.response?.status);
       setError(err.response?.data?.message || "Thêm thất bại!");
     }
   };
@@ -101,14 +154,19 @@ const BuildingBlockManagement = () => {
   const handleEdit = async () => {
     setError(""); setSuccess("");
     if (selected == null) { setError("Vui lòng chọn dãy để sửa!"); return; }
-    if (!form.code || !form.name || !form.rooms) { setError("Vui lòng nhập đầy đủ thông tin!"); return; }
+    if (!form.name || !form.rooms) { setError("Vui lòng nhập đầy đủ thông tin!"); return; }
+    
+    if (isNaN(form.rooms) || parseInt(form.rooms) <= 0) {
+      setError("Số phòng phải là số dương!"); return;
+    }
+    
     try {
       const res = await axios({
         method: SummaryApi.updateRowRoom.method,
         url: baseURL + SummaryApi.updateRowRoom.url + `?MaDayPhong=${form.code}`,
         data: {
           TenDayPhong: form.name,
-          SoPhongCuaDay: form.rooms,
+          SoPhongCuaDay: parseInt(form.rooms),
         },
       });
       setSuccess("Sửa dãy phòng thành công!");
@@ -121,7 +179,7 @@ const BuildingBlockManagement = () => {
       } else {
         setRows(rows.map(r =>
           r.code === form.code
-            ? { ...r, name: form.name, rooms: form.rooms }
+            ? { ...r, name: form.name, rooms: parseInt(form.rooms) }
             : r
         ));
       }
@@ -136,6 +194,7 @@ const BuildingBlockManagement = () => {
   const handleDelete = async () => {
     setError(""); setSuccess("");
     if (selected == null) { setError("Vui lòng chọn dãy để xóa!"); return; }
+    
     try {
       const res = await axios({
         method: SummaryApi.deleteRowRoom.method,
@@ -174,22 +233,36 @@ const BuildingBlockManagement = () => {
           <h2 className="text-xl font-bold mb-4">Thông tin dãy phòng</h2>
           <div className="flex flex-wrap gap-6 mb-5 justify-center">
             <div className="flex items-center">
-              <label className="mb-1 font-bold mr-2">Mã dãy:</label>
-              <input className="border rounded py-1 w-[150px] px-2" value={form.code} onChange={e => setForm(f => ({ ...f, code: e.target.value }))} />
-            </div>
-            <div className="flex items-center">
               <label className="mb-1 font-bold mr-2">Tên dãy:</label>
-              <input className="border rounded py-1 w-[150px] px-2" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+              <input 
+                className="border rounded py-1 w-[150px] px-2" 
+                value={form.name} 
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                placeholder="Nhập tên dãy"
+              />
             </div>
             <div className="flex items-center">
-              <label className="mb-1 font-bold mr-2 px-2">Số phòng của dãydãy:</label>
-              <input className="border rounded py-1 w-[150px] px-2" value={form.rooms} onChange={e => setForm(f => ({ ...f, rooms: e.target.value }))} />
+              <label className="mb-1 font-bold mr-2">Số phòng:</label>
+              <input 
+                className="border rounded py-1 w-[100px] px-2" 
+                value={form.rooms} 
+                onChange={e => setForm(f => ({ ...f, rooms: e.target.value }))}
+                placeholder="Số phòng"
+                type="number"
+                min="1"
+              />
             </div>
           </div>
           <div className="flex flex-wrap gap-4 justify-center">
             <button className="bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded" onClick={handleAdd}>Thêm</button>
             <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-2 rounded" onClick={handleEdit}>Sửa</button>
-            <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded" onClick={handleDelete}>Xóa</button>
+            <button className="bg-red-500 hover:bg-red-600 text-white font-semibold px-6 py-2 rounded" onClick={() => {
+              if (selected == null) {
+                setError("Vui lòng chọn dãy để xóa!");
+                return;
+              }
+              setShowDeleteModal(true);
+            }}>Xóa</button>
             <button className="bg-cyan-600 hover:bg-cyan-700 text-white font-semibold px-6 py-2 rounded" onClick={handleReset}>Làm mới</button>
             {error && <div className="w-full text-center text-red-500 font-semibold mt-2">{error}</div>}
             {success && <div className="w-full text-center text-green-500 font-semibold mt-2">{success}</div>}
@@ -270,6 +343,33 @@ const BuildingBlockManagement = () => {
             </button>
           </div>
         </div>
+
+        {/* Modal xác nhận xóa */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-80">
+              <h2 className="text-lg font-bold mb-4 text-center">Xác nhận xóa</h2>
+              <p className="mb-6 text-center">Bạn có chắc chắn muốn xóa dãy phòng này?</p>
+              <div className="flex justify-center gap-4">
+                <button
+                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                  onClick={async () => {
+                    setShowDeleteModal(false);
+                    await handleDelete();
+                  }}
+                >
+                  Xóa
+                </button>
+                <button
+                  className="bg-gray-300 hover:bg-gray-400 text-black px-4 py-2 rounded"
+                  onClick={() => setShowDeleteModal(false)}
+                >
+                  Hủy
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

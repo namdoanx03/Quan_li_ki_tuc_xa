@@ -81,6 +81,10 @@ const SummaryApi = {
         url: "/api/rowRoom/getAllRowRoom",
         method: "get",
     },
+    generateMaDayPhong: {
+        url: "/api/rowRoom/generateMaDayPhong",
+        method: "get",
+    },
 
     // CONTRACT
     createContract: {
